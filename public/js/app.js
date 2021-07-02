@@ -18540,13 +18540,13 @@ __webpack_require__.r(__webpack_exports__);
     addCategory: function addCategory() {
       this.$inertia.post("/category", {
         title: this.categoryTitle,
-        is_admin: true
+        on_admin: true
       });
       this.categoryTitle = "";
     },
     deleteCategory: function deleteCategory(id) {
       this.$inertia.post("/category/" + id, {
-        is_admin: true,
+        on_admin: true,
         _method: 'DELETE'
       });
     }
@@ -19010,7 +19010,7 @@ __webpack_require__.r(__webpack_exports__);
       input: "",
       category: null,
       items: [],
-      editingCategory: 0,
+      editingCategoryId: 0,
       editingCategoryTitle: null
     };
   },
@@ -19022,46 +19022,46 @@ __webpack_require__.r(__webpack_exports__);
         category: this.category || null,
         completed: false
       });
-      this.$inertia.post("/items", {
+      this.$inertia.post(route('items.store'), {
         items: this.items
       });
       this.input = "";
     },
     deleteItem: function deleteItem(index) {
       this.items.splice(index, 1);
-      this.$inertia.post("/items", {
+      this.$inertia.post(route('items.store'), {
         items: this.items
       });
     },
     addCategory: function addCategory() {
-      this.$inertia.post("/category", {
+      this.$inertia.post(route('category.store'), {
         title: this.categoryTitle,
-        is_admin: false
+        on_admin: false
       });
       this.categoryTitle = "";
     },
     deleteCategory: function deleteCategory(id) {
-      this.$inertia.post("/category/" + id, {
-        is_admin: false,
+      this.$inertia.post(route('category.delete', id), {
+        on_admin: false,
         _method: 'DELETE'
       });
     },
     editCategory: function editCategory(id) {
-      if (this.editingCategory === id) {
-        this.editingCategory = 0;
+      if (this.editingCategoryId === id) {
+        this.editingCategoryId = 0;
         this.editingCategoryTitle = null;
       } else {
-        this.editingCategory = id;
+        this.editingCategoryId = id;
         this.editingCategoryTitle = this.categories[id].title;
       }
     },
     updateCategory: function updateCategory() {
-      this.$inertia.post("/category/" + this.editingCategory, {
+      this.$inertia.post(route('category.update', this.editingCategoryId), {
         title: this.editingCategoryTitle,
-        is_admin: false,
+        on_admin: false,
         _method: 'PUT'
       });
-      this.editingCategory = 0;
+      this.editingCategoryId = 0;
       this.editingCategoryTitle = null;
     }
   }
@@ -23121,7 +23121,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("li", {
           key: category.id,
           "class": "flex justify-between items-center mt-3"
-        }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", _hoisted_8, [category.id !== $data.editingCategory ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("div", _hoisted_9, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(category.title), 1
+        }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", _hoisted_8, [category.id !== $data.editingCategoryId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("div", _hoisted_9, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(category.title), 1
         /* TEXT */
         )) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("input", {
           "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
@@ -23139,7 +23139,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           onClick: function onClick($event) {
             return $options.editCategory(category.id);
           }
-        }, [category.id !== $data.editingCategory ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("svg", _hoisted_14, [_hoisted_15])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("svg", _hoisted_16, [_hoisted_17]))], 8
+        }, [category.id !== $data.editingCategoryId ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("svg", _hoisted_14, [_hoisted_15])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)("svg", _hoisted_16, [_hoisted_17]))], 8
         /* PROPS */
         , ["onClick"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("button", {
           onClick: function onClick($event) {

@@ -48,7 +48,7 @@
                                 class="flex justify-between items-center mt-3"
                             >
                                 <div class="flex items-center">
-                                    <div v-if="category.id !== editingCategory" class="ml-3 text-sm font-semibold">
+                                    <div v-if="category.id !== editingCategoryId" class="ml-3 text-sm font-semibold">
                                         {{ category.title }}
                                     </div>
                                     <div v-else class="ml-3 text-sm">
@@ -63,7 +63,7 @@
                                 </div>
                                 <div class="space-x-2" v-if="category.is_admin === false">
                                     <button @click="editCategory(category.id)">
-                                        <svg v-if="category.id !== editingCategory" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <svg v-if="category.id !== editingCategoryId" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                         </svg>
                                         <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -256,7 +256,7 @@ export default {
             input: "",
             category: null,
             items: [],
-            editingCategory: 0,
+            editingCategoryId: 0,
             editingCategoryTitle: null
         };
     },
@@ -270,7 +270,7 @@ export default {
                 completed: false,
             });
 
-            this.$inertia.post("/items", {
+            this.$inertia.post(route('items.store'), {
                 items: this.items,
             });
 
@@ -279,43 +279,43 @@ export default {
 
         deleteItem(index) {
             this.items.splice(index, 1);
-            this.$inertia.post("/items", {
+            this.$inertia.post(route('items.store'), {
                 items: this.items,
             });
         },
 
         addCategory() {
-            this.$inertia.post("/category", {
+            this.$inertia.post(route('category.store'), {
                 title: this.categoryTitle,
-                is_admin: false
+                on_admin: false
             });
             this.categoryTitle = "";
         },
 
         deleteCategory(id) {
-            this.$inertia.post("/category/" + id, {
-                is_admin: false,
+            this.$inertia.post(route('category.delete', id), {
+                on_admin: false,
                 _method: 'DELETE'
             });
         },
 
         editCategory(id) {
-            if (this.editingCategory === id) {
-                this.editingCategory = 0;
+            if (this.editingCategoryId === id) {
+                this.editingCategoryId = 0;
                 this.editingCategoryTitle = null;
             } else {
-                this.editingCategory = id;
+                this.editingCategoryId = id;
                 this.editingCategoryTitle = this.categories[id].title;
             }
         },
 
         updateCategory() {
-            this.$inertia.post("/category/" + this.editingCategory, {
+            this.$inertia.post(route('category.update', this.editingCategoryId), {
                 title: this.editingCategoryTitle,
-                is_admin: false,
+                on_admin: false,
                 _method: 'PUT'
             });
-            this.editingCategory = 0;
+            this.editingCategoryId = 0;
             this.editingCategoryTitle = null;
         },
     },

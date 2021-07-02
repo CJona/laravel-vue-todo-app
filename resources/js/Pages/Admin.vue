@@ -116,14 +116,14 @@ export default {
         addCategory() {
             this.$inertia.post("/category", {
                 title: this.categoryTitle,
-                is_admin: true
+                on_admin: true
             });
             this.categoryTitle = "";
         },
 
         deleteCategory(id) {
             this.$inertia.post("/category/" + id, {
-                is_admin: true,
+                on_admin: true,
                 _method: 'DELETE'
             });
         },
