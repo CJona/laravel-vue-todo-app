@@ -1242,6 +1242,15 @@ select {
 .min-w-0 {
 	min-width: 0px;
 }
+.min-w-\[192px\] {
+	min-width: 192px;
+}
+.min-w-\[256px\] {
+	min-width: 256px;
+}
+.min-w-\[16rem\] {
+	min-width: 16rem;
+}
 .max-w-screen-xl {
 	max-width: 1280px;
 }
@@ -1634,6 +1643,15 @@ select {
 }
 .pr-7 {
 	padding-right: 1.75rem;
+}
+.pl-0 {
+	padding-left: 0px;
+}
+.pr-28 {
+	padding-right: 7rem;
+}
+.pr-64 {
+	padding-right: 16rem;
 }
 .text-center {
 	text-align: center;
