@@ -9,6 +9,8 @@ RUN chown -R www-data:www-data /root/ && chown -R www-data:www-data /.composer
 WORKDIR /var/www/html
 # Copy all files into root directory and change owner to www-data
 COPY --chown=www-data:www-data . /var/www/html
+# Configure supervisord
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Install MySQL packages
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 # Install NPM
