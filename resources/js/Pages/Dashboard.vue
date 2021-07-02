@@ -2,9 +2,30 @@
     <div>
         <app-layout>
             <template #header>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Todo
-                </h2>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                            Todo
+                        </h2>
+                    </div>
+                    <div>
+                        <div class="flex justify-center">
+                            <label for="toggleButton" class="flex items-center cursor-pointer">
+                                <div class="px-2">Filter op onvoltooid:</div>
+                                <div class="relative">
+                                    <input v-model="filtered" id="toggleButton" type="checkbox" class="hidden" />
+                                    <div
+                                        class="toggle-path bg-gray-200 w-9 h-5 rounded-full shadow-inner"
+                                    ></div>
+                                    <div
+                                        class="toggle-circle absolute w-3.5 h-3.5 bg-white rounded-full shadow inset-y-0 left-0"
+                                    ></div>
+                                </div>
+                            </label>
+
+                        </div>
+                    </div>
+                </div>
             </template>
 
             <div class="py-12">
@@ -159,6 +180,7 @@
                                 v-for="(item, index) in items"
                                 v-bind:key="index"
                                 class="flex justify-between items-center mt-3"
+                                v-show="filtered === false || filtered === true && item.completed === false"
                             >
                                 <div
                                     class="flex items-center"
@@ -310,7 +332,8 @@ export default {
             editingCategoryTitle: null,
             editingItemId: -1,
             editingItemTitle: null,
-            editingItemCategory: null
+            editingItemCategory: null,
+            filtered: false
         };
     },
 
