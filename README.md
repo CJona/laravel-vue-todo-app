@@ -45,6 +45,8 @@ Om aan de slag te gaan, moet je Docker op je machine geïnstalleerd hebben. Met 
 
 ### Start de applicatie
 
+**LET OP: U moet eerst een .env bestand hebben geconfigureerd voordat u de Docker containers kunt bouwen!!!**
+
 Gebruik het commando `docker-compose up -d` om de applicatie te starten met al zijn containers. Dit commando bouwt de dockerfiles, ontkoppelt de uitvoering en draait het op de achtergrond.
 
 ### Stop de applicatie
@@ -62,3 +64,7 @@ De laatste versie wordt automatisch geïnstalleerd bij het bouwen van de Docker 
 Om met Node & npm te werken moet u uw terminal binnen de PHP container navigeren met het volgende commando: `docker-compose exec app bash`. Zodra u in de container bent genavigeerd kunt u de commando's `npm` en `node` gebruiken zoals u gewend bent.
 
 De laatste versie wordt automatisch geïnstalleerd bij het bouwen van de Docker containers.
+
+### Laravel Artisan Commando's
+
+Om met de Laravel console commando's te werken moet u uw terminal binnen de PHP container navigeren met het volgende commando: `docker-compose exec app bash`. Zodra u in de container bent genavigeert kunt u de commando's `php artisan migrate` of `php artisan key:generate` e.d. gebruiken zoals u gewend bent.
