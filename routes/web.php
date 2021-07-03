@@ -18,125 +18,145 @@ use phpDocumentor\Reflection\Types\True_;
 |
 */
 
-// Middleware als je ingelogd bent / auth guest
+/**
+ * Middleware die controleert of jij ingelogd bent,
+ * Als jij niet ingelogd bent word je naar de /login gestuurd
+ */
 Route::middleware(['auth:sanctum', 'verified'])->group(function() {
 
-    // Dashboard pagina
+    /**
+     * Dashboard pagina tonen
+     */
     Route::get('/', function () {
-        $user = auth()->user();
+        $user = auth()->user(); // Ingelogde gebruiker
 
+        // Vue.js pagina weergeven (/resources/js/Pages/Dashboard.vue)
         return Inertia::render('Dashboard', [
             'categories' =>
-                Category::where('user_id', '=', $user->id)
-                    ->orWhere('is_admin', '=', true)
-                    ->with('user') // $category->user | ->id, ->email
-                    ->get()->keyBy('id'),
-            'tasks' => $user->tasks
+                Category::where('user_id', '=', $user->id) // Categorieen ophalen van de gebruiker
+                    ->orWhere('is_admin', '=', true) // Globale categorieen ophalen
+                    ->with('user') // Gebruiker relatie bij de categorieen inladen
+                    ->get()->keyBy('id'), // Database ID gebruiken als index
+            'tasks' => $user->tasks // De taken van de gebruiker inladen
         ]);
-    })->name('dashboard');
+    })->name('dashboard'); // Route naam
 
-    // Admin categorie pagina
+    /**
+     * Admin pagina voor de categorieen tonen
+     */
     Route::get('/admin', function () {
-        $user = auth()->user();
+        $user = auth()->user(); // Ingelogde gebruiker
 
-        if( $user->is_admin === false) abort(403);
+        if( $user->is_admin === false) abort(403); // Als de gebruiker GEEN admin is, foutmelding tonen
 
+        // Vue.js pagina weergeven (/resources/js/Pages/Admin.vue)
         return Inertia::render('Admin', [
-            'admin_categories' => Category::where('is_admin', true)
-                ->with('user')
-                ->get()->keyBy('id'),
+            'admin_categories' => Category::where('is_admin', true) // Alle admin categorieen ophalen
+                ->with('user') // Gebruiker relatie bij de categorieen inladen
+                ->get()->keyBy('id'), // Database ID gebruiken als index
         ]);
-    })->name('admin');
+    })->name('admin'); // Route naam
 
-    // Nieuwe taak opslaan
+    /**
+     * Route om de taken van de gebruiker op te slaan
+     * @param Request $request | Bevat formuliergegevens
+     */
     Route::post('/tasks', function (Request $request) {
-        $user = auth()->user();
+        $user = auth()->user(); // Ingelogde gebruiker
 
-        if($request->items) {
-            $request->validate([
+        if($request->items) { // Als wij vanuit de pagina de taken van de gebruiker ontvangen
+            $request->validate([ // Controleer of de structuur van de data overeenkomt met wat wij nodig hebben
                 'items' => ['required', 'array'],
                 'items.*.title' => ['required', 'string', 'min:3'],
                 'items.*.completed' => ['required', 'boolean']
             ]);
 
-            $user->update([
+            $user->update([ // Update de gebruiker's taken
                 'tasks' => $request->items
             ]);
-        } else {
+        } else { // Als wij GEEN taken ontvangen zorgen wij ervoor dat de gebruiker op zijn minst een lege array heeft voor de taken
             $user->update([
                 'tasks' => []
             ]);
         }
 
-        return redirect()->route('dashboard');
-    })->name('items.store');
+        return redirect()->route('dashboard'); // Terugsturen naar de dashboard
+    })->name('items.store'); // Route naam
 
-    // Nieuwe categorie aanmaken
+    /**
+     * Route om een categorie voor de gebruiker aan te maken
+     * @param Request $request | Bevat formuliergegevens
+     */
     Route::post('/category', function (Request $request) {
+        $user = auth()->user(); // Ingelogde gebruiker
 
-        $request->validate([
+        $request->validate([ // Controleer of de structuur van de data overeenkomt met wat wij nodig hebben
             'title' => ['required', 'string', 'min:3'],
             'on_admin' => ['required', 'boolean'],
         ]);
 
-        // Controleren of het een admin categorie is EN of de gebruiker die het toevoegt ook een admin is
-        if ($request->on_admin === true && auth()->user()->is_admin === true) {
-            // Maken wij de categorie aan als admin categorie
-            Category::create([
-                'user_id' => auth()->id(),
+        if ($request->on_admin === true && $user->is_admin === true) { // Controleren of de gebruiker op de admin pagina is EN of de gebruiker die het toevoegt ook een admin is
+            Category::create([ // Categorie aanmaken voor de gebruiker
+                'user_id' => $user->id,
                 'title' => $request->title,
                 'is_admin' => true
             ]);
-            return redirect()->route('admin');
-        } else {
-            // Zoniet normale categorie
-            Category::create([
-                'user_id' => auth()->id(),
+            return redirect()->route('admin'); // Terugsturen naar admin pagina
+        } else { // De gebruiker is NIET op de admin dashboard en is GEEN admin
+            Category::create([ // Dan maken wij een normale categorie voor de gebruiker aan
+                'user_id' => $user->id,
                 'title' => $request->title,
                 'is_admin' => false
             ]);
-            return redirect()->route('dashboard');
+            return redirect()->route('dashboard'); // Terugsturen naar de gebruiker dashboard
         }
+    })->name('category.store'); // Route naam
 
-    })->name('category.store');
-
-    // Categorie verwijderen
+    /**
+     * Route om de categorie van een gebruiker te verwijderen
+     * @param Request $request | Bevat formuliergegevens
+     * @param Category $category | De categorie die verwijderd wordt
+     */
     Route::delete('/category/{category}', function (Request $request, Category $category) {
-        $request->validate([
+        $user = auth()->user(); // Ingelogde gebruiker
+
+        $request->validate([ // Controleer of de structuur van de data overeenkomt met wat wij nodig hebben
             'on_admin' => ['required', 'boolean'],
         ]);
 
-        if ($request->on_admin === true) {
-            // admin categorie
-            if(auth()->user()->is_admin === false || $category->is_admin === false) abort(403);
-            $category->delete();
-            return redirect()->route('admin');
-        } else {
-            // gebruiker categorie
-            if($category->user_id !== auth()->id()) abort(403);
-            $category->delete();
-            return redirect()->route('dashboard');
+        if ($request->on_admin === true) { // Controleren of de gebruiker op de admin pagina is
+            if($user->is_admin === false || $category->is_admin === false) abort(403); // Als de gebruiker GEEN admin is OF als de categorie GEEN admin categorie is, tonen wij een foutmelding
+            $category->delete(); // Categorie verwijderen
+            return redirect()->route('admin'); // Terugsturen naar admin pagina
+        } else { // Als de gebruiker op de dashboard pagina is (geen admin dus)
+            if($category->user_id !== $user->id) abort(403); // Als de categorie die verwijderd wordt NIET van de ingelogde gebruiker is, tonen wij een foutmelding
+            $category->delete(); // Categorie verwijderen
+            return redirect()->route('dashboard'); // Terugsturen naar de dashboard pagina
         }
-    })->name('category.delete');
+    })->name('category.delete'); // Route naam
 
-    // categorie bewerken
+    /**
+     * Route om de categorie van de gebruiker te bewerken
+     * @param Request $request | Bevat formuliergegevens
+     * @param Category $category | De categorie die verwijderd wordt
+     */
     Route::put('/category/{category}', function (Request $request, Category $category) {
-        $request->validate([
+        $user = auth()->user(); // Ingelogde gebruiker
+
+        $request->validate([ // Controleer of de structuur van de data overeenkomt met wat wij nodig hebben
             'title' => ['required', 'string', 'min:3'],
             'on_admin' => ['required', 'boolean'],
         ]);
 
-        if ($request->on_admin === true) {
-            // admin categorie
-            if(auth()->user()->is_admin === false || $category->is_admin === false) abort(403);
-            $category->update(['title' => $request->title]);
-            return redirect()->route('admin');
-        } else {
-            // gebruiker categorie
-            if($category->user_id !== auth()->id()) abort(403);
-            $category->update(['title' => $request->title]);
-            return redirect()->route('dashboard');
+        if ($request->on_admin === true) { // Controleren of de gebruiker op de admin pagina is
+            if($user->is_admin === false || $category->is_admin === false) abort(403); // Als de gebruiker GEEN admin is OF als de categorie GEEN admin categorie is, tonen wij een foutmelding
+            $category->update(['title' => $request->title]); // De titel van de categorie bewerken
+            return redirect()->route('admin'); // Terugsturen naar de admin pagina
+        } else { // Als de gebruiker op de dashboard pagina is (geen admin dus)
+            if($category->user_id !== $user->id) abort(403); // Als de categorie die bewerkt wordt NIET van de ingelogde gebruiker is, tonen wij een foutmelding
+            $category->update(['title' => $request->title]); // De titel van de categorie bewerken
+            return redirect()->route('dashboard'); // Terugsturen naar de dashboard pagina
         }
-    })->name('category.update');
+    })->name('category.update'); // Route naam
 });
 

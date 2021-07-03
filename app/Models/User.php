@@ -26,8 +26,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'password',
-        'tasks',
-        'is_admin'
+        'tasks', // De databaseveld om de taken bij te houden
+        'is_admin' // De databaseveld om de admin status bij te houden
     ];
 
     /**
@@ -62,6 +62,12 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
+    /**
+     * Databaserelatie van One-To-Many
+     * 1 gebruiker kan meerdere categorieen hebben
+     * $user->categories = [Category::model,Category::model,Category::model]
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function categories() {
         return $this->hasMany(Category::class);
     }

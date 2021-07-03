@@ -65,4 +65,12 @@ Gebruik het commando `docker-compose down --remove-orphans` om alle onderliggend
 
 `docker-compose exec app npm run production` - Bouwt de Vue.js frontend applicatie
 
+### Gebruikers in de applicatie
 
+Om in te logggen als admin:
+ - Email: `admin@admin.nl`
+ - Wachtwoord: `1234567890`
+
+Om in te logggen als normale gebruiker:
+ - Email: `gebruiker@gebruiker.nl`
+ - Wachtwoord: `1234567890`
