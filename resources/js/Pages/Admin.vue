@@ -92,63 +92,61 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import Welcome from "@/Jetstream/Welcome";
 import JetValidationErrors from "@/Jetstream/ValidationErrors";
 
 export default {
-    components: {
+    components: { // Herbruikbare .vue component
         AppLayout,
-        Welcome,
         JetValidationErrors,
     },
 
-    props: {
-        admin_categories: Object,
+    props: { // De variabelen die wij vanuit Laravel krijgen (niet aan te passen)
+        admin_categories: Object, // Zie /routes/web.php regel 54
     },
 
-
-    data() {
+    data() {  // De variabelen die wij op deze .vue component maken (Admin.vue) (wel aan te passen)
         return {
-            categoryTitle: "",
-            editingCategoryId: 0,
-            editingCategoryTitle: null
+            categoryTitle: "", // De titel van de categorie die wij aanmaken
+
+            editingCategoryId: 0, // De ID van de categorie die wij willen bewerken
+            editingCategoryTitle: null, // De titel van de categorie die wij willen bewerken
         };
     },
 
-    methods: {
-        addCategory() {
-            this.$inertia.post("/category", {
-                title: this.categoryTitle,
-                on_admin: true
+    methods: { // De functies in deze .vue component
+        addCategory() { // Toevoegen van een categorie
+            this.$inertia.post("/category", { // POST de categorie van de gebruiker naar Laravel om op te slaan
+                title: this.categoryTitle, // De titel van de categorie die wij aanmaken
+                on_admin: true // Indicatie dat wij WEL op de admin pagina zitten
             });
-            this.categoryTitle = "";
+            this.categoryTitle = ""; // Invoer van de gebruiker weer leeghalen
         },
 
-        deleteCategory(id) {
-            this.$inertia.post("/category/" + id, {
-                on_admin: true,
-                _method: 'DELETE'
+        deleteCategory(id) { // Categorie verwijderen
+            this.$inertia.post(route('category.delete', id), { // POST (eigenlijk DELETE) de categorie van de gebruiker naar Laravel om te verwijderen
+                on_admin: true, // Indicatie dat wij WEL op de admin pagina zitten
+                _method: 'DELETE' // Doorverwijzen naar Route::delete() in Laravel
             });
         },
 
-        editCategory(id) {
-            if (this.editingCategoryId === id) {
-                this.editingCategoryId = 0;
-                this.editingCategoryTitle = null;
+        editCategory(id) { // Categorie bewerken
+            if (this.editingCategoryId === id) { // Als de categorie die wij willen bewerken (waar op geklikt wordt) al wordt bewerkt
+                this.editingCategoryId = 0; // Stoppen met bewerken
+                this.editingCategoryTitle = null; // Stoppen met bewerken
             } else {
-                this.editingCategoryId = id;
-                this.editingCategoryTitle = this.admin_categories[id].title;
+                this.editingCategoryId = id; // Starten met bewerken door de ID van de categorie bij te houden
+                this.editingCategoryTitle = this.admin_categories[id].title; // Starten met bewerken en de waarde invullen bij de invoervelden
             }
         },
 
-        updateCategory() {
-            this.$inertia.post(route('category.update', this.editingCategoryId), {
-                title: this.editingCategoryTitle,
-                on_admin: true,
-                _method: 'PUT'
+        updateCategory() { // De bewerking van een categorie opslaan
+            this.$inertia.post(route('category.update', this.editingCategoryId), { // POST (eigenlijk PUT) de categorie van de gebruiker naar Laravel om op te bewerken
+                title: this.editingCategoryTitle, // De nieuwe titel van de categorie die wij bewerken
+                on_admin: true, // Indicatie dat wij WEL op de admin pagina zitten
+                _method: 'PUT' // Doorverwijzen naar Route::put() in Laravel
             });
-            this.editingCategoryId = 0;
-            this.editingCategoryTitle = null;
+            this.editingCategoryId = 0; // Stoppen met bewerken
+            this.editingCategoryTitle = null; // Stoppen met bewerken
         },
     },
 };

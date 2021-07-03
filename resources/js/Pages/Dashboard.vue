@@ -294,122 +294,122 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import Welcome from "@/Jetstream/Welcome";
 import JetValidationErrors from "@/Jetstream/ValidationErrors";
 
 export default {
-    components: {
+    components: { // Herbruikbare .vue component
         AppLayout,
-        Welcome,
         JetValidationErrors,
     },
 
-    props: {
-        categories: Object,
-        tasks: Array,
+    props: { // De variabelen die wij vanuit Laravel krijgen (niet aan te passen)
+        categories: Object, // Zie /routes/web.php regel 35
+        tasks: Array, // Zie /routes/web.php regel 40
     },
 
-    watch: {
-        items: {
-            handler() {
-                this.$inertia.post(route('items.store'), {
-                    items: this.items,
+    data() { // De variabelen die wij op deze .vue component maken (Dashboard.vue) (wel aan te passen)
+        return {
+            categoryTitle: "", // De titel van de categorie die wij aanmaken
+
+            input: "", //  De titel van de taak die wij aanmaken
+            category: null, // De categorie die bij de taak hoort die wij aanmaken
+
+            items: this.tasks || [], // De taken van de gebruiker zodat wij deze kunnen aanpassen
+
+            editingCategoryId: 0, // De ID van de categorie die wij willen bewerken
+            editingCategoryTitle: null, // De titel van de categorie die wij willen bewerken
+
+            editingItemId: -1, // De index van de taak die wij willen bewerken
+            editingItemTitle: null, // De titel van de taak die wij willen bewerken
+            editingItemCategory: null, // De categorie van de taak die wij willen bewerken
+
+            filtered: false // De schakelaar voor de filter van de taken
+        };
+    },
+
+    watch: { // Variabelen in de gaten houden
+        items: { // De variabele die wij willen controleren
+            handler() { // De functie die uitgevoerd moet worden als de variabele wordt aangepast
+                this.$inertia.post(route('items.store'), { // POST de taken van de gebruiker naar Laravel om op te slaan
+                    items: this.items, // De taken die wij moeten opslaan
                 }, {
-                   preserveScroll:true
+                    preserveScroll:true // Onthoud waar wij zijn op de pagina zodat het niet terug sprint wanneer wij op enter klikken
                 });
             },
             deep: true,
         },
     },
 
-    data() {
-        return {
-            categoryTitle: "",
-            input: "",
-            category: null,
-            items: this.tasks || [],
-            editingCategoryId: 0,
-            editingCategoryTitle: null,
-            editingItemId: -1,
-            editingItemTitle: null,
-            editingItemCategory: null,
-            filtered: false
-        };
-    },
-
-    methods: {
-        addItem() {
-            if (this.input === "") return;
-            this.items.push({
+    methods: { // De functies in deze .vue component
+        addItem() { // Aanmaken van een nieuwe taak
+            if (this.input === "") return; // Als de titel van de taak die wij willen maken leeg is stoppen wij de functie hier
+            this.items.push({ // Voeg de invoer van de gebruiker toe aan de taken
                 title: this.input,
                 category: this.category || null,
                 completed: false,
             });
 
-            this.input = "";
+            this.input = ""; // Invoer van de gebruiker weer leeghalen
         },
 
-        editItem(index) {
-            if (this.editingItemId === index) {
-                this.editingItemId = -1;
-                this.editingItemTitle = null;
-                this.editingItemCategory = null;
+        editItem(index) { // Bewerken van een taak
+            if (this.editingItemId === index) { // Als de taak die wij willen bewerken (waar op geklikt wordt) al wordt bewerkt
+                this.editingItemId = -1; // Stoppen met bewerken
+                this.editingItemTitle = null; // Stoppen met bewerken
+                this.editingItemCategory = null; // Stoppen met bewerken
             } else {
-                this.editingItemId = index;
-                this.editingItemTitle = this.items[index].title;
-                this.editingItemCategory = this.items[index].category;
+                this.editingItemId = index; // Starten met bewerken door de index van de taak bij te houden
+                this.editingItemTitle = this.items[index].title; // Starten met bewerken en de waarde invullen bij de invoervelden
+                this.editingItemCategory = this.items[index].category; // Starten met bewerken en de waarde invullen bij de invoervelden
             }
         },
 
-        updateItem() {
-            this.items[this.editingItemId].title = this.editingItemTitle;
-            this.items[this.editingItemId].category = this.editingItemCategory;
+        updateItem() { // Enter klikken bij het bewerken van een taak
+            this.items[this.editingItemId].title = this.editingItemTitle; // Wij passen this.items aan, zie regel 332
+            this.items[this.editingItemId].category = this.editingItemCategory; // Wij passen this.items aan, zie regel 332
 
-            this.editingItemId = -1;
-            this.editingItemTitle = null;
-            this.editingItemCategory = null;
+            this.editingItemId = -1; // Stoppen met bewerken
+            this.editingItemTitle = null; // Stoppen met bewerken
+            this.editingItemCategory = null; // Stoppen met bewerken
         },
 
-        deleteItem(index) {
-            this.items.splice(index, 1);
-            this.$inertia.post(route('items.store'), {
-                items: this.items,
+        deleteItem(index) { // Verwijderen van een taak
+            this.items.splice(index, 1); // Wij passen this.items aan (verwijderen valt ook onder aanpassen), zie regel 332
+        },
+
+        addCategory() { // Toevoegen van een categorie
+            this.$inertia.post(route('category.store'), { // POST de categorie van de gebruiker naar Laravel om op te slaan
+                title: this.categoryTitle, // De titel van de categorie die wij aanmaken
+                on_admin: false // Indicatie dat wij NIET op de admin pagina zitten
+            });
+            this.categoryTitle = ""; // Invoer van de gebruiker weer leeghalen
+        },
+
+        deleteCategory(id) { // Categorie verwijderen
+            this.$inertia.post(route('category.delete', id), { // POST (eigenlijk DELETE) de categorie van de gebruiker naar Laravel om te verwijderen
+                on_admin: false, // Indicatie dat wij NIET op de admin pagina zitten
+                _method: 'DELETE' // Doorverwijzen naar Route::delete() in Laravel
             });
         },
 
-        addCategory() {
-            this.$inertia.post(route('category.store'), {
-                title: this.categoryTitle,
-                on_admin: false
-            });
-            this.categoryTitle = "";
-        },
-
-        deleteCategory(id) {
-            this.$inertia.post(route('category.delete', id), {
-                on_admin: false,
-                _method: 'DELETE'
-            });
-        },
-
-        editCategory(id) {
-            if (this.editingCategoryId === id) {
-                this.editingCategoryId = 0;
-                this.editingCategoryTitle = null;
+        editCategory(id) { // Categorie bewerken
+            if (this.editingCategoryId === id) { // Als de categorie die wij willen bewerken (waar op geklikt wordt) al wordt bewerkt
+                this.editingCategoryId = 0; // Stoppen met bewerken
+                this.editingCategoryTitle = null; // Stoppen met bewerken
             } else {
-                this.editingCategoryId = id;
-                this.editingCategoryTitle = this.categories[id].title;
+                this.editingCategoryId = id; // Starten met bewerken door de ID van de categorie bij te houden
+                this.editingCategoryTitle = this.categories[id].title; // Starten met bewerken en de waarde invullen bij de invoervelden
             }
         },
 
-        updateCategory() {
-            this.$inertia.post(route('category.update', this.editingCategoryId), {
-                title: this.editingCategoryTitle,
-                on_admin: false,
-                _method: 'PUT'
+        updateCategory() { // De bewerking van een categorie opslaan
+            this.$inertia.post(route('category.update', this.editingCategoryId), { // POST (eigenlijk PUT) de categorie van de gebruiker naar Laravel om op te bewerken
+                title: this.editingCategoryTitle, // De nieuwe titel van de categorie die wij bewerken
+                on_admin: false, // Indicatie dat wij NIET op de admin pagina zitten
+                _method: 'PUT' // Doorverwijzen naar Route::put() in Laravel
             });
-            this.editingCategoryId = 0;
-            this.editingCategoryTitle = null;
+            this.editingCategoryId = 0; // Stoppen met bewerken
+            this.editingCategoryTitle = null; // Stoppen met bewerken
         },
     },
 };
