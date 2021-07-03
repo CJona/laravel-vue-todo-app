@@ -74,3 +74,19 @@ Om in te logggen als admin:
 Om in te logggen als normale gebruiker:
  - Email: `gebruiker@gebruiker.nl`
  - Wachtwoord: `1234567890`
+
+## In een notendop
+
+De bestanden waar het meeste werk in zitten zijn:
+
+ - /app/Models/User.php
+ - /app/Models/Category.php
+ - /routes/web.php
+ - /resources/js/Pages/Dashboard.vue
+ - /resources/js/Pages/Admin.vue
+
+En minder werk bij:
+ - /database/migrations/create_users_table....
+ - /database/migrations/create_categories_table....
+ - /database/seeder/DatabaseSeeder.php
+ - /docker/php.dockerfile
