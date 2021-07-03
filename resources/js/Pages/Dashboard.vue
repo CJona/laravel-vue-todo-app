@@ -327,7 +327,7 @@ export default {
             categoryTitle: "",
             input: "",
             category: null,
-            items: this.tasks,
+            items: this.tasks || [],
             editingCategoryId: 0,
             editingCategoryTitle: null,
             editingItemId: -1,
