@@ -1,9 +1,8 @@
 FROM php:8.0-fpm-alpine
 
-# Make the root directory
+# Make the root directory & dependency directories
 RUN mkdir -p /var/www/html && mkdir -p /root/ && mkdir -p /root/.npm && mkdir -p /root/.tailwindcss && mkdir -p /.composer
-
-# Make package directories
+# Fix directory permissions
 RUN chown -R www-data:www-data /root/ && chown -R www-data:www-data /.composer
 # Change to root directory
 WORKDIR /var/www/html
@@ -11,9 +10,9 @@ WORKDIR /var/www/html
 COPY --chown=www-data:www-data . /var/www/html
 # Configure supervisord
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-# Install MySQL packages
+# Install MySQL extension for php
 RUN docker-php-ext-install mysqli pdo pdo_mysql
-# Install NPM
+# Install NPM and supervisor
 RUN apk update && apk add --no-cache npm supervisor
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

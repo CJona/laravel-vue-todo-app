@@ -7,56 +7,58 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## Jonathan Cameron's Examenproject Todo App
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Onderstaande lijst vat de functionaliteiten in de applicatie samen:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Multi User
+- Todos: Bekijken, aanmaken, bewerken, verwijderen, markeren als voltooid, filteren
+- Categorieen: Bekijken, aanmaken, bewerken, verwijderen
+- Admin categorieen: Bekijken, aanmaken, bewerken, verwijderen
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Hoe de applicatie is gebouwd
 
-## Learning Laravel
+De applicatie is gebouwd met Laravel als backend en Vue.js als frontend. De frontend draait volledig op de JavaScript framework Vue.js. 
+De applicatie kent slechts 2 databasemodellen, namelijk: User en Category.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+##### User Model  
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+De User databasemodel wordt gebruikt voor de authenticatie (multi user). In dit databasemodel worden de taken van de gebruikers bijgehouden onder het databasekolom `tasks`, en de admin rechten onder het databasekolom `is_admin`.
 
-## Laravel Sponsors
+##### Category Model 
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+De Category databasemodel wordt gebruikt om de categorieen van de gebruikers en de admins bij te houden. De indicator voor een admin category in dit databasemodel is onder het databasekolom `is_admin`. De gebruikers worden altijd gekoppeld aan categorieen zodat normale gebruikers hun eigen categorieen krijgen en daarbij de admin categorieeen. De gebruikers kunnen aan de hand hiervan zien welke admin de globale categorie heeft aangemaakt.
 
-### Premium Partners
+##### Relaties
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
+De User en Category databasemodel hebben een een-op-meer relaties. Dit betekent dat een gebruiker meerdere categorieen kan hebben. De onderstaande afbeelding weergeeft het Entiteit Relatie Diagram van deze applicatie.
 
-## Contributing
+<img src="https://i.imgur.com/k1GXzF8.png" alt="ERD">
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Ontwikkelen
 
-## Code of Conduct
+De applicatie beheert zijn omgevingen met behulp van [Docker](https://docker.com). Dit betekent dat je niets op je eigen computer hoeft te installeren en dat je aan alle onderdelen van de applicatie kunt werken met de meegeleverde containers. Dit maakt het een fluitje van een cent om aan de slag te gaan met de ontwikkeling.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Commando's
 
-## Security Vulnerabilities
+Om aan de slag te gaan, moet je Docker op je machine geïnstalleerd hebben. Met behulp van `docker-compose` commando kun je de containers beheren.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Start de applicatie
 
-## License
+Gebruik het commando `docker-compose up -d` om de applicatie te starten met al zijn containers. Dit commando bouwt de dockerfiles, ontkoppelt de uitvoering en draait het op de achtergrond.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Stop de applicatie
+
+Gebruik het commando `docker-compose down --remove-orphans` om alle onderliggende containers mee te verwijderen.
+
+### Composer
+
+Om met Composer te kunnen werken moet je in je terminal binnen de PHP container navigeren met het volgende commando: `docker-compose exec app bash`. Als u eenmaal in de container bent genavigeerd kunt u het commando `composer` gebruiken zoals u gewend bent. 
+
+De laatste versie wordt automatisch geïnstalleerd bij het bouwen van de Docker containers. 
+
+### Node.js & npm
+
+Om met Node & npm te werken moet u uw terminal binnen de PHP container navigeren met het volgende commando: `docker-compose exec app bash`. Zodra u in de container bent genavigeerd kunt u de commando's `npm` en `node` gebruiken zoals u gewend bent.
+
+De laatste versie wordt automatisch geïnstalleerd bij het bouwen van de Docker containers.
