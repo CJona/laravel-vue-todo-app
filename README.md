@@ -53,18 +53,10 @@ Gebruik het commando `docker-compose up -d` om de applicatie te starten met al z
 
 Gebruik het commando `docker-compose down --remove-orphans` om alle onderliggende containers mee te verwijderen.
 
-### Composer
+### Handige commando's:
 
-Om met Composer te kunnen werken moet je in je terminal binnen de PHP container navigeren met het volgende commando: `docker-compose exec app bash`. Als u eenmaal in de container bent genavigeerd kunt u het commando `composer` gebruiken zoals u gewend bent. 
-
-De laatste versie wordt automatisch geïnstalleerd bij het bouwen van de Docker containers. 
-
-### Node.js & npm
-
-Om met Node & npm te werken moet u uw terminal binnen de PHP container navigeren met het volgende commando: `docker-compose exec app bash`. Zodra u in de container bent genavigeerd kunt u de commando's `npm` en `node` gebruiken zoals u gewend bent.
-
-De laatste versie wordt automatisch geïnstalleerd bij het bouwen van de Docker containers.
-
-### Laravel Artisan Commando's
-
-Om met de Laravel console commando's te werken moet u uw terminal binnen de PHP container navigeren met het volgende commando: `docker-compose exec app bash`. Zodra u in de container bent genavigeert kunt u de commando's `php artisan migrate` of `php artisan key:generate` e.d. gebruiken zoals u gewend bent.
+`docker-compose exec app composer install` - Installeert de Composer pakketten
+`docker-compose exec app npm install` - Installeert de NPM pakketten
+`docker-compose exec app php artisan key:generate` - Genereert encryptie sleutel voor in de `.env`
+`docker-compose exec app php artisan migrate:fresh --seed` - Genereert en vult de database
+`docker-compose exec app npm run production` - Bouwt de Vue.js frontend applicatie

@@ -16,10 +16,5 @@ RUN docker-php-ext-install mysqli pdo pdo_mysql
 RUN apk update && apk add --no-cache npm supervisor
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-# Install and update NPM and Composer packages
-RUN npm install
-RUN composer install
-# Run NPM as production
-RUN npm run prod
 # Let supervisord start the laravel server
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
