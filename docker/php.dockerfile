@@ -1,7 +1,7 @@
 FROM php:8.0-fpm-alpine
 
 # Make the root directory & dependency directories
-RUN mkdir -p /var/www/html && mkdir -p /root/ && mkdir -p /root/.npm && mkdir -p /root/.tailwindcss && mkdir -p /.composer
+RUN mkdir -p /var/www/html && mkdir -p /root/ && mkdir -p /root/.npm && mkdir -p /root/.npm/_logs && mkdir -p /root/.tailwindcss && mkdir -p /.composer
 # Fix directory permissions
 RUN chown -R www-data:www-data /root/ && chown -R www-data:www-data /.composer
 # Change to root directory
