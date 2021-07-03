@@ -56,7 +56,13 @@ Gebruik het commando `docker-compose down --remove-orphans` om alle onderliggend
 ### Handige commando's:
 
 `docker-compose exec app composer install` - Installeert de Composer pakketten
+
 `docker-compose exec app npm install` - Installeert de NPM pakketten
+
 `docker-compose exec app php artisan key:generate` - Genereert encryptie sleutel voor in de `.env`
+
 `docker-compose exec app php artisan migrate:fresh --seed` - Genereert en vult de database
+
 `docker-compose exec app npm run production` - Bouwt de Vue.js frontend applicatie
+
+
