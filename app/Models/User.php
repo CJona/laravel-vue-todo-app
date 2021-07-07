@@ -68,7 +68,8 @@ class User extends Authenticatable
      * $user->categories = [Category::model,Category::model,Category::model]
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function categories() {
+    public function categories()
+    {
         return $this->hasMany(Category::class);
     }
 }

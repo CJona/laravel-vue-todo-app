@@ -22,7 +22,8 @@ use phpDocumentor\Reflection\Types\True_;
  * Middleware die controleert of jij ingelogd bent,
  * Als jij niet ingelogd bent word je naar de /login gestuurd
  */
-Route::middleware(['auth:sanctum', 'verified'])->group(function() {
+
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     /**
      * Dashboard pagina tonen
@@ -47,7 +48,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
     Route::get('/admin', function () {
         $user = auth()->user(); // Ingelogde gebruiker
 
-        if( $user->is_admin === false) abort(403); // Als de gebruiker GEEN admin is, foutmelding tonen
+        if ($user->is_admin === false) {
+            abort(403); // Als de gebruiker GEEN admin is, foutmelding tonen
+        }
 
         // Vue.js pagina weergeven (/resources/js/Pages/Admin.vue)
         return Inertia::render('Admin', [
@@ -64,7 +67,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
     Route::post('/tasks', function (Request $request) {
         $user = auth()->user(); // Ingelogde gebruiker
 
-        if($request->items) { // Als wij vanuit de pagina de taken van de gebruiker ontvangen
+        if ($request->items) { // Als wij vanuit de pagina de taken van de gebruiker ontvangen
             $request->validate([ // Controleer of de structuur van de data overeenkomt met wat wij nodig hebben
                 'items' => ['required', 'array'],
                 'items.*.title' => ['required', 'string', 'min:3'],
@@ -125,11 +128,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
         ]);
 
         if ($request->on_admin === true) { // Controleren of de gebruiker op de admin pagina is
-            if($user->is_admin === false || $category->is_admin === false) abort(403); // Als de gebruiker GEEN admin is OF als de categorie GEEN admin categorie is, tonen wij een foutmelding
+            if ($user->is_admin === false || $category->is_admin === false) {
+                abort(403); // Als de gebruiker GEEN admin is OF als de categorie GEEN admin categorie is, tonen wij een foutmelding
+            }
             $category->delete(); // Categorie verwijderen
             return redirect()->route('admin'); // Terugsturen naar admin pagina
         } else { // Als de gebruiker op de dashboard pagina is (geen admin dus)
-            if($category->user_id !== $user->id) abort(403); // Als de categorie die verwijderd wordt NIET van de ingelogde gebruiker is, tonen wij een foutmelding
+            if ($category->user_id !== $user->id) {
+                abort(403); // Als de categorie die verwijderd wordt NIET van de ingelogde gebruiker is, tonen wij een foutmelding
+            }
             $category->delete(); // Categorie verwijderen
             return redirect()->route('dashboard'); // Terugsturen naar de dashboard pagina
         }
@@ -149,14 +156,17 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function() {
         ]);
 
         if ($request->on_admin === true) { // Controleren of de gebruiker op de admin pagina is
-            if($user->is_admin === false || $category->is_admin === false) abort(403); // Als de gebruiker GEEN admin is OF als de categorie GEEN admin categorie is, tonen wij een foutmelding
+            if ($user->is_admin === false || $category->is_admin === false) {
+                abort(403); // Als de gebruiker GEEN admin is OF als de categorie GEEN admin categorie is, tonen wij een foutmelding
+            }
             $category->update(['title' => $request->title]); // De titel van de categorie bewerken
             return redirect()->route('admin'); // Terugsturen naar de admin pagina
         } else { // Als de gebruiker op de dashboard pagina is (geen admin dus)
-            if($category->user_id !== $user->id) abort(403); // Als de categorie die bewerkt wordt NIET van de ingelogde gebruiker is, tonen wij een foutmelding
+            if ($category->user_id !== $user->id) {
+                abort(403); // Als de categorie die bewerkt wordt NIET van de ingelogde gebruiker is, tonen wij een foutmelding
+            }
             $category->update(['title' => $request->title]); // De titel van de categorie bewerken
             return redirect()->route('dashboard'); // Terugsturen naar de dashboard pagina
         }
     })->name('category.update'); // Route naam
 });
-
