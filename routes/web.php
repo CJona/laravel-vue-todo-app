@@ -42,23 +42,28 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         ]);
     })->name('dashboard'); // Route naam
 
-    /**
-     * Admin pagina voor de categorieen tonen
-     */
-    Route::get('/admin', function () {
-        $user = auth()->user(); // Ingelogde gebruiker
+    Route::middleware(['admin_guard'])-> group(function() {
 
-        if ($user->is_admin === false) {
-            abort(403); // Als de gebruiker GEEN admin is, foutmelding tonen
-        }
+        /**
+         * Admin pagina voor de categorieen tonen
+         */
+        Route::get('/admin', function () {
+            $user = auth()->user(); // Ingelogde gebruiker
 
-        // Vue.js pagina weergeven (/resources/js/Pages/Admin.vue)
-        return Inertia::render('Admin', [
-            'admin_categories' => Category::where('is_admin', true) // Alle admin categorieen ophalen
+            if ($user->is_admin === false) {
+                abort(403); // Als de gebruiker GEEN admin is, foutmelding tonen
+            }
+
+            // Vue.js pagina weergeven (/resources/js/Pages/Admin.vue)
+            return Inertia::render('Admin', [
+                'admin_categories' => Category::where('is_admin', true) // Alle admin categorieen ophalen
                 ->with('user') // Gebruiker relatie bij de categorieen inladen
                 ->get()->keyBy('id'), // Database ID gebruiken als index
-        ]);
-    })->name('admin'); // Route naam
+            ]);
+        })->name('admin'); // Route naam
+
+
+    });
 
     /**
      * Route om de taken van de gebruiker op te slaan

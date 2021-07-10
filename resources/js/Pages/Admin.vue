@@ -132,7 +132,7 @@ export default {
 
 	methods: { // De functies in deze .vue component
 		addCategory() { // Toevoegen van een categorie
-			this.$inertia.post("/category", { // POST de categorie van de gebruiker naar Laravel om op te slaan
+			this.$inertia.post(route("category.store"), { // POST de categorie van de gebruiker naar Laravel om op te slaan
 				title: this.categoryTitle, // De titel van de categorie die wij aanmaken
 				on_admin: true // Indicatie dat wij WEL op de admin pagina zitten
 			});
